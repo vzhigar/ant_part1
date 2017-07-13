@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Decorator" default="main">
+
+    <property file="build.properties"/>
+   
+    <macrodef name="buildproject">
+
+        <attribute name="classesdir"/>
+        <attribute name="jardir"/>
+        <attribute name="mainclass"/>
+        <element name="projectsrcdir"/>
+        <element name="projectclasspath"/>
+
+        <sequential>
+
+            <echo>-------------------------</echo>
+            <echo>Compiling Java sources...</echo>
+            <mkdir dir="${classes.dir}"/>
+            <javac destdir="@{classesdir}" includeantruntime="false">
+                <src>
+                    <projectsrcdir/>
+                </src>
+            </javac>
+            <echo>----------Done!----------</echo>
+
+            <echo>--Building jar file....--</echo>
+            <mkdir dir="${dist.dir}"/>
+            <jar basedir="@{classesdir}" destfile="@{jardir}/${dest.file}"/>
+            <echo>----------Done!----------</echo>
+
+            <echo>--Running main class...--</echo>
+            <path id="classes.path">
+                <projectclasspath/>
+            </path>
+            <java classname="@{mainclass}">
+                <classpath refid="classes.path"/>
+            </java>
+            <echo>----------Done!----------</echo>
+        </sequential>
+    </macrodef>
+
+    <target name="build-project">
+        <buildproject classesdir="${classes.dir}"
+                      jardir="${dist.dir}"
+                      mainclass="${main.class}">
+            <projectsrcdir>
+                <dirset dir="${src.dir}"/>
+            </projectsrcdir>
+            <projectclasspath>
+                <dirset dir="${classes.dir}"/>
+            </projectclasspath>
+        </buildproject>
+    </target>
+
+    <target name="main" depends="build-project">
+    </target>
+
+</project>
